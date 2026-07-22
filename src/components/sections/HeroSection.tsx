@@ -1,46 +1,71 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  ShieldCheck, 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  Users, 
-  ChevronDown, 
-  Sparkles, 
-  CheckCircle2, 
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  ShieldCheck,
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+  ChevronDown,
+  Sparkles,
+  CheckCircle2,
   ArrowRight,
   // أيقونات الإحصائيات
-  Award,       
-  Car,         
-  Milestone,   
-  Navigation   
-} from 'lucide-react';
-import { Language } from '../../types';
-import { UI_TEXT, SERVICES_DATA } from '../../content/translations';
+  Award,
+  Car,
+  Milestone,
+  Navigation,
+} from "lucide-react";
+import { Language } from "../../types";
+import { UI_TEXT, SERVICES_DATA } from "../../content/translations";
 
 interface HeroSectionProps {
   lang: Language;
   onOpenBookingModal: (prefilledService?: string) => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({
-  lang,
-  onOpenBookingModal,
-}) => {
-  const [pickup, setPickup] = useState('');
-  const [destination, setDestination] = useState('');
-  const [service, setService] = useState('airport');
-  const [date, setDate] = useState('');
+export const HeroSection: React.FC<HeroSectionProps> = ({ lang }) => {
+  const [pickup, setPickup] = useState("");
+  const [destination, setDestination] = useState("");
+  const [service, setService] = useState("airport");
+  const [date, setDate] = useState("");
   const [passengers, setPassengers] = useState(2);
 
   const t = UI_TEXT.hero;
 
-  const handleQuickBook = (e: React.FormEvent) => {
-    e.preventDefault();
-    onOpenBookingModal(service);
-  };
+  const [formData, setFormData] = useState({
+    pickup: "",
+    destination: "",
+    service: "airport",
+    date: "",
+    passengers: 2,
+  });
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handleCalculate = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    console.log(formData);
+
+    // خزّنها لو محتاج تستخدمها في Contact
+    // localStorage.setItem("bookingData", JSON.stringify(data));
+
+    // document.getElementById("contact")?.scrollIntoView({
+    //   behavior: "smooth",
+    // });
+    document.getElementById("contact")?.scrollIntoView({
+      behavior: "smooth",
+    });
+  };
   // دالة لتحديد الأيقونة بناءً على الفهرس
   const getStatIconByIndex = (index: number) => {
     switch (index) {
@@ -58,7 +83,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-28 pb-16 overflow-hidden bg-[#050505]">
-      
       {/* Background Media & Video */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[radial-gradient(ellipse,rgba(201,162,39,0.18)_0%,transparent_70%)] blur-3xl pointer-events-none animate-pulse z-10" />
@@ -94,9 +118,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </span>
           </div>
         </motion.div>
-
         {/* Main Headlines */}
-        <div className="text-center max-w-4xl mx-auto mb-10">
+        <div className="text-center max-w-4xl mx-auto mb-1">
           <motion.h1
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
@@ -117,8 +140,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           >
             {t.lead1[lang]}
           </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-balance sm:text-lg text-white/75 max-w-2xl mx-auto mt-10 leading-relaxed font-light"
+          >
+            {t.add[lang]}
+          </motion.p>
         </div>
-
         {/* Booking Form Card */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -140,17 +170,25 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </span>
             </div>
 
-            <form onSubmit={handleQuickBook} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <form
+              onSubmit={handleCalculate}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+            >
               <div className="flex flex-col gap-1.5">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-[#C9A227] flex items-center gap-1">
                   <MapPin className="w-3 h-3" />
-                  {lang === 'en' ? 'Pickup Location' : 'Abholort'}
+                  {lang === "en" ? "Pickup Location" : "Abholort"}
                 </label>
                 <input
+                  name="pickup"
                   type="text"
-                  value={pickup}
-                  onChange={(e) => setPickup(e.target.value)}
-                  placeholder={lang === 'en' ? 'Zurich Airport, Hotel...' : 'Flughafen Zürich, Hotel...'}
+                  value={formData.pickup}
+                  onChange={handleChange}
+                  placeholder={
+                    lang === "en"
+                      ? "Zurich Airport, Hotel..."
+                      : "Flughafen Zürich, Hotel..."
+                  }
                   className="w-full bg-[#0D0D0D]/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#C9A227] transition-colors"
                 />
               </div>
@@ -158,13 +196,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <div className="flex flex-col gap-1.5">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-[#C9A227] flex items-center gap-1">
                   <MapPin className="w-3 h-3 text-[#F4D06F]" />
-                  {lang === 'en' ? 'Destination' : 'Zielort'}
+                  {lang === "en" ? "Destination" : "Zielort"}
                 </label>
                 <input
+                  name="destination"
                   type="text"
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  placeholder={lang === 'en' ? 'St. Moritz, Zug...' : 'St. Moritz, Zug...'}
+                  value={formData.destination}
+                  onChange={handleChange}
+                  placeholder={
+                    lang === "en" ? "St. Moritz, Zug..." : "St. Moritz, Zug..."
+                  }
                   className="w-full bg-[#0D0D0D]/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#C9A227] transition-colors"
                 />
               </div>
@@ -172,11 +213,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <div className="flex flex-col gap-1.5">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-[#C9A227] flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3" />
-                  {lang === 'en' ? 'Service Category' : 'Service-Art'}
+                  {lang === "en" ? "Service Category" : "Service-Art"}
                 </label>
                 <select
-                  value={service}
-                  onChange={(e) => setService(e.target.value)}
+                  name="service"
+                  value={formData.service}
+                  onChange={handleChange}
                   className="w-full bg-[#0D0D0D]/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#C9A227]"
                 >
                   {SERVICES_DATA.map((s) => (
@@ -191,12 +233,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[10px] font-bold uppercase tracking-widest text-[#C9A227] flex items-center gap-1">
                     <Calendar className="w-3 h-3" />
-                    {lang === 'en' ? 'Date' : 'Datum'}
+                    {lang === "en" ? "Date" : "Datum"}
                   </label>
                   <input
+                    name="date"
                     type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
+                    // value={formData.date}
+                    onChange={handleChange}
                     className="w-full bg-[#0D0D0D]/90 border border-white/10 rounded-xl px-2.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#C9A227]"
                   />
                 </div>
@@ -204,11 +247,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[10px] font-bold uppercase tracking-widest text-[#C9A227] flex items-center gap-1">
                     <Users className="w-3 h-3" />
-                    {lang === 'en' ? 'Guests' : 'Gäste'}
+                    {lang === "en" ? "Guests" : "Gäste"}
                   </label>
                   <select
+                    name="passengers"
                     value={passengers}
-                    onChange={(e) => setPassengers(Number(e.target.value))}
+                    onChange={handleChange}
                     className="w-full bg-[#0D0D0D]/90 border border-white/10 rounded-xl px-2 py-2.5 text-xs text-white focus:outline-none focus:border-[#C9A227]"
                   >
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
@@ -224,16 +268,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <div className="flex items-center gap-3 text-xs text-white/60">
                   <Clock className="w-4 h-4 text-[#C9A227]" />
                   <span>
-                    {lang === 'en' 
-                      ? 'Live Chauffeur dispatch standing by 24/7'
-                      : '24/7 Chauffeur-Zentrale bereit'}
+                    {lang === "en"
+                      ? "Live Chauffeur dispatch standing by 24/7"
+                      : "24/7 Chauffeur-Zentrale bereit"}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                   <a
                     href={`https://wa.me/41764894741?text=${encodeURIComponent(
-                      `Inquiry: Pickup ${pickup || 'Zurich'}, Destination ${destination || 'Hotel'}`
+                      `Inquiry: Pickup ${pickup || "Zurich"}, Destination ${destination || "Hotel"}`,
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -242,26 +286,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     {t.ctaWhatsapp[lang]}
                   </a>
 
-                  <button
-                    type="submit"
+                  <a
+                    href={"#contact"}
+                    onClick={handleCalculate}
                     className="w-1/2 sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-[#C9A227] to-[#F4D06F] text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(201,162,39,0.3)] hover:scale-[1.02] transition-all"
                   >
                     <span>{t.ctaCalculate[lang]}</span>
                     <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </a>
                 </div>
               </div>
             </form>
           </div>
         </motion.div>
-
         {/* --- Luxurious Framer-Style Bento Grid Stats --- */}
         {t.stats && (
           <div className="relative max-w-5xl mx-auto">
-            
             {/* الحاوية الرئيسية بزوايا قائمة حادة (rounded-none) وإطار موحد */}
             <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 rounded-none border border-white/10 bg-[#0a0a0a]/60 backdrop-blur-xl overflow-hidden divide-y md:divide-y-0 lg:divide-x divide-white/10">
-              
               {Object.values(t.stats).map((item: any, index: number) => {
                 if (!item) return null;
                 return (
@@ -274,7 +316,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
                     {/* حاوية الأيقونة مع تأثير الحلقة المضيئة الدوارة باستمرار */}
                     <div className="relative flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-black border border-white/10">
-                      
                       {/* النقطة المتوهجة الدوارة ظاهرة ومضيئة بشكل دائم وثابت */}
                       <div className="absolute inset-[-1px] rounded-full overflow-hidden pointer-events-none">
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4.5 h-4.5 bg-gradient-to-r from-[#C9A227] to-[#F4D06F] rounded-full blur-[2px] animate-[spin_5s_linear_infinite] origin-[center_24px] shadow-[0_0_12px_#C9A227]" />
@@ -302,7 +343,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
             {/* --- علامات التقاطع الاحترافية على شكل بلص (+) بلون ذهبي ناعم --- */}
             <div className="hidden lg:block absolute inset-0 pointer-events-none">
-              
               {/* نقطة الالتقاء الأولى (بين الكارد 1 و 2) */}
               <div className="absolute left-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
                 <div className="text-[#C9A227] font-light text-xl opacity-90 select-none animate-pulse">
@@ -324,17 +364,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
               </div>
             </div>
-
           </div>
         )}
-
         {/* Scroll Indicator */}
         <div className="flex justify-center mt-12">
           <a
             href="#services"
             className="flex flex-col items-center gap-2 text-white/40 hover:text-[#C9A227] transition-colors"
           >
-            <span className="text-[10px] font-mono uppercase tracking-[0.2em]">EXPLORE VIP SERVICES</span>
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em]">
+              EXPLORE VIP SERVICES
+            </span>
             <ChevronDown className="w-4 h-4 animate-bounce text-[#C9A227]" />
           </a>
         </div>

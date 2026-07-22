@@ -1,4 +1,4 @@
-export type Language = 'en' | 'de';
+export type Language = "en" | "de";
 
 export interface ServiceItem {
   id: string;
@@ -15,7 +15,9 @@ export interface Vehicle {
   id: string;
   name: string;
   classType: Record<Language, string>;
-  category: 'business' | 'first' | 'van';
+  category1: "business" | "first" | "van";
+  category: "Zurich" | "Umgebung" | "Goldkuste";
+
   passengers: number;
   luggage: number;
   imageJpg: string;
@@ -51,7 +53,7 @@ export interface RoutePrice {
   route: string;
   taxiPrice: string;
   vanPrice: string;
-  region: 'see-march' | 'knonaueramt' | 'zug-innerschweiz' | 'business';
+  region: "see-march" | "knonaueramt" | "zug-innerschweiz" | "business";
 }
 
 export interface BookingFormData {
